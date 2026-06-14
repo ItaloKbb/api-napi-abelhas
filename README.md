@@ -13,7 +13,7 @@ O projeto segue uma arquitetura **Clean**, **DRY**, **SOLID** e **Modular**, com
 | **DTO** | Definição e validação da forma dos dados com Zod (schema + tipo inferido) | ISP, DRY |
 | **Repository** | Acesso ao banco de dados via `PrismaService` (módulo global) | SRP, DIP, DRY |
 
-> 📖 Documentação completa: [wiki/06-arquitetura.md](./wiki/06-arquitetura.md)
+> 📖 Documentação completa: [wiki](https://github.com/ItaloKbb/api-napi-abelhas/wiki)
 
 ## 🛠️ Stack Tecnológica
 
