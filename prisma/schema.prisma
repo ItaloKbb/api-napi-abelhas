@@ -1,0 +1,255 @@
+datasource db {
+  provider = "postgresql"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum Estado {
+  AC
+  AL
+  AP
+  AM
+  BA
+  CE
+  DF
+  ES
+  GO
+  MA
+  MT
+  MS
+  MG
+  PA
+  PB
+  PR
+  PE
+  PI
+  RJ
+  RN
+  RS
+  RO
+  RR
+  SC
+  SP
+  SE
+  TO
+}
+
+enum Regiao {
+  NORTE
+  NORDESTE
+  CENTRO_OESTE
+  SUDESTE
+  SUL
+}
+
+enum Bioma {
+  AMAZONIA
+  CERRADO
+  MATA_ATLANTICA
+  CAATINGA
+  PAMPA
+  PANTANAL
+}
+
+enum FileType {
+  IMAGE
+  TEXTO
+  PDF
+  OUTROS
+}
+
+enum StatusAnalise {
+  PENDENTE
+  EM_PREPARO
+  AGUARDANDO_RESULTADO
+  EM_REVISAO
+  CONCLUIDA
+  REJEITADA
+}
+
+model CidadesIBGE {
+  id         String @id @default(uuid())
+  codigoIBGE String @unique
+  cidade     String
+  estado     Estado
+  regiao     Regiao
+  bioma      Bioma?
+
+  produtores     Produtor[]
+  responsaveis   Responsavel[]
+  pontosDeColeta PontoColeta[]
+}
+
+model Produtor {
+  id    String @id @default(uuid())
+  orgId String
+  nome  String
+
+  cidadeId String?
+  cidade   CidadesIBGE? @relation(fields: [cidadeId], references: [id])
+
+  amostras Amostra[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([orgId])
+}
+
+model Responsavel {
+  id    String @id @default(uuid())
+  orgId String
+  nome  String
+
+  instituicaoId String @unique
+
+  cidadeId String?
+  cidade   CidadesIBGE? @relation(fields: [cidadeId], references: [id])
+
+  analises Analise[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([orgId])
+}
+
+model TipoAmostra {
+  id        String  @id @default(uuid())
+  nome      String  @unique
+  descricao String?
+
+  amostras Amostra[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model TipoAnalise {
+  id   String @id @default(uuid())
+  nome String @unique
+
+  analises Analise[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Abelha {
+  id             String  @id @default(uuid())
+  nomeCientifico String  @unique
+  nomePopular    String?
+  semFerrao      Boolean @default(true)
+  nativa         Boolean @default(true)
+  descricao      String? @db.Text
+
+  amostras Amostra[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model FileGroup {
+  id    String @id @default(uuid())
+  orgId String
+
+  files File[]
+
+  amostra   Amostra? @relation(fields: [amostraId], references: [id])
+  amostraId String?
+
+  analise   Analise? @relation(fields: [analiseId], references: [id])
+  analiseId String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([amostraId, analiseId])
+  @@index([orgId])
+}
+
+model File {
+  id   String   @id @default(uuid())
+  url  String   @unique
+  type FileType @default(IMAGE)
+
+  uploadedByUserId String?
+  uploadedByName   String?
+
+  fileGroupId String
+  fileGroup   FileGroup @relation(fields: [fileGroupId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model PontoColeta {
+  id        String @id @default(uuid())
+  orgId     String
+  nome      String
+  latitude  Float
+  longitude Float
+  raio      Float?
+
+  cidadeId String
+  cidade   CidadesIBGE @relation(fields: [cidadeId], references: [id])
+
+  amostras Amostra[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([orgId])
+}
+
+model Amostra {
+  id         String   @id @default(uuid())
+  orgId      String
+  nome       String
+  dataColeta DateTime
+
+  pontoColetaId String
+  pontoColeta   PontoColeta @relation(fields: [pontoColetaId], references: [id])
+
+  abelhaId String
+  abelha   Abelha @relation(fields: [abelhaId], references: [id])
+
+  produtorId String
+  produtor   Produtor @relation(fields: [produtorId], references: [id])
+
+  tipoAmostraId String
+  tipoAmostra   TipoAmostra @relation(fields: [tipoAmostraId], references: [id])
+
+  analises  Analise[]
+  fileGroup FileGroup[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([orgId])
+}
+
+model Analise {
+  id    String @id @default(uuid())
+  orgId String
+
+  status StatusAnalise @default(PENDENTE)
+
+  amostraId String
+  amostra   Amostra @relation(fields: [amostraId], references: [id], onDelete: Cascade)
+
+  tipoAnaliseId String
+  tipoAnalise   TipoAnalise @relation(fields: [tipoAnaliseId], references: [id])
+
+  responsavelId String
+  responsavel   Responsavel @relation(fields: [responsavelId], references: [id])
+
+  fileGroup FileGroup[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([orgId])
+}
