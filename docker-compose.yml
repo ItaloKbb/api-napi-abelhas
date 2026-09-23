@@ -17,6 +17,7 @@ services:
       MINIO_SECRET_KEY: minioadmin
       MINIO_BUCKET: napi-abelhas
       MINIO_USE_SSL: 'false'
+      MINIO_PUBLIC_URL: '${MINIO_PUBLIC_URL:-http://localhost:9000}'
       PORT: 3000
       NODE_ENV: production
     ports:
@@ -96,8 +97,11 @@ services:
       /usr/bin/mc alias set minio http://minio:9000 minioadmin minioadmin;
       /usr/bin/mc mb minio/napi-abelhas --ignore-existing;
       /usr/bin/mc anonymous set private minio/napi-abelhas;
+      /usr/bin/mc cors set minio/napi-abelhas /config/cors.xml;
       exit 0;
       "
+    volumes:
+      - './minio-cors.xml:/config/cors.xml:ro'
 
 volumes:
   postgres_data:

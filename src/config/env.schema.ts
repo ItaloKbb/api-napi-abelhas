@@ -10,6 +10,7 @@ export const envSchema = z.object({
   MINIO_SECRET_KEY: z.string().default('minioadmin'),
   MINIO_BUCKET: z.string().default('napi-abelhas'),
   MINIO_USE_SSL: z.string().default('false'),
+  MINIO_PUBLIC_URL: z.string().url().optional(),
   CLERK_PUBLISHABLE_KEY: z.string().optional(),
   CLERK_SECRET_KEY: z.string().optional(),
   CLERK_WEBHOOK_SECRET: z.string().optional(),

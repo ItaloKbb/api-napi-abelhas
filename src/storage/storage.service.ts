@@ -12,6 +12,7 @@ import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 @Injectable()
 export class StorageService {
   private s3Client: S3Client;
+  private presigningClient: S3Client;
   private bucket: string;
 
   constructor(private configService: ConfigService) {
@@ -30,15 +31,29 @@ export class StorageService {
     this.bucket = configService.get<string>('MINIO_BUCKET', 'napi-abelhas');
 
     const protocol = useSSL ? 'https' : 'http';
-
-    this.s3Client = new S3Client({
-      endpoint: `${protocol}://${endpoint}:${port}`,
+    const clientOptions = {
       region: 'us-east-1',
       credentials: {
         accessKeyId: accessKey,
         secretAccessKey: secretKey,
       },
       forcePathStyle: true,
+    };
+
+    this.s3Client = new S3Client({
+      ...clientOptions,
+      endpoint: `${protocol}://${endpoint}:${port}`,
+    });
+
+    // Browser-facing URLs need an address reachable outside Docker.
+    // Server-side operations continue to use the private endpoint above.
+    const publicEndpoint = configService.get<string>(
+      'MINIO_PUBLIC_URL',
+      `${protocol}://${endpoint}:${port}`,
+    );
+    this.presigningClient = new S3Client({
+      ...clientOptions,
+      endpoint: publicEndpoint,
     });
   }
 
@@ -52,7 +67,7 @@ export class StorageService {
       Key: key,
       ContentType: contentType,
     });
-    return getSignedUrl(this.s3Client, command, { expiresIn });
+    return getSignedUrl(this.presigningClient, command, { expiresIn });
   }
 
   async getDownloadPresignedUrl(
@@ -63,7 +78,7 @@ export class StorageService {
       Bucket: this.bucket,
       Key: key,
     });
-    return getSignedUrl(this.s3Client, command, { expiresIn });
+    return getSignedUrl(this.presigningClient, command, { expiresIn });
   }
 
   async deleteObject(key: string): Promise<void> {

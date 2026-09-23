@@ -11,6 +11,7 @@ const mockConfigService = {
       MINIO_SECRET_KEY: 'minioadmin',
       MINIO_BUCKET: 'napi-abelhas',
       MINIO_USE_SSL: 'false',
+      MINIO_PUBLIC_URL: 'https://storage.example.com',
     };
     return config[key] ?? defaultValue;
   }),
@@ -56,6 +57,23 @@ describe('StorageService', () => {
       const key2 = service.generateKey('reports', 'file.pdf');
       // keys should be unique due to random component
       expect(key1).not.toBe(key2);
+    });
+  });
+
+  describe('presigned URLs', () => {
+    it('uses the public endpoint for browser uploads', async () => {
+      const url = await service.getUploadPresignedUrl(
+        'reports/file.pdf',
+        'application/pdf',
+      );
+
+      expect(new URL(url).origin).toBe('https://storage.example.com');
+    });
+
+    it('uses the public endpoint for browser downloads', async () => {
+      const url = await service.getDownloadPresignedUrl('reports/file.pdf');
+
+      expect(new URL(url).origin).toBe('https://storage.example.com');
     });
   });
 });
