@@ -2,10 +2,11 @@ import type { FileGroup, File } from '@prisma/client';
 import type { CreateFileGroupDto } from '../dto/create-file-group.dto';
 import type { UpdateFileGroupDto } from '../dto/update-file-group.dto';
 import type { AddFileDto } from '../dto/add-file.dto';
+import type { QueryFileGroupsDto } from '../dto/query-file-groups.dto';
 
 export interface IFileGroupsRepository {
   create(data: CreateFileGroupDto, orgId: string): Promise<FileGroup>;
-  findAll(orgId: string): Promise<FileGroup[]>;
+  findAll(orgId: string, filters?: QueryFileGroupsDto): Promise<FileGroup[]>;
   findOne(id: string, orgId: string): Promise<(FileGroup & { files: File[] }) | null>;
   update(id: string, data: UpdateFileGroupDto, orgId: string): Promise<FileGroup>;
   remove(id: string, orgId: string): Promise<FileGroup>;

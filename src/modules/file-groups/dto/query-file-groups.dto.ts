@@ -1,9 +1,9 @@
 import { z } from 'zod';
 
-export const updateFileGroupSchema = z.object({
+export const queryFileGroupsSchema = z.object({
   amostraId: z.string().uuid().optional(),
   analiseId: z.string().uuid().optional(),
   abelhaId: z.string().uuid().optional(),
 });
 
-export type UpdateFileGroupDto = z.infer<typeof updateFileGroupSchema>;
+export type QueryFileGroupsDto = z.infer<typeof queryFileGroupsSchema>;

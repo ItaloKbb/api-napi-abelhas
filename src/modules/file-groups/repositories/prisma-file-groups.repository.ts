@@ -4,6 +4,7 @@ import type { IFileGroupsRepository } from './file-groups.repository';
 import type { CreateFileGroupDto } from '../dto/create-file-group.dto';
 import type { UpdateFileGroupDto } from '../dto/update-file-group.dto';
 import type { AddFileDto } from '../dto/add-file.dto';
+import type { QueryFileGroupsDto } from '../dto/query-file-groups.dto';
 
 @Injectable()
 export class PrismaFileGroupsRepository implements IFileGroupsRepository {
@@ -13,9 +14,14 @@ export class PrismaFileGroupsRepository implements IFileGroupsRepository {
     return await this.prisma.fileGroup.create({ data: { ...data, orgId } });
   }
 
-  async findAll(orgId: string) {
+  async findAll(orgId: string, filters?: QueryFileGroupsDto) {
     return await this.prisma.fileGroup.findMany({
-      where: { orgId },
+      where: {
+        orgId,
+        amostraId: filters?.amostraId,
+        analiseId: filters?.analiseId,
+        abelhaId: filters?.abelhaId,
+      },
       include: { files: true },
     });
   }

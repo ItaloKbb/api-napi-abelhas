@@ -6,6 +6,7 @@ import {
   Delete,
   Param,
   Body,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { ClerkAuthGuard } from '@/common/guards/clerk-auth.guard';
@@ -30,6 +31,10 @@ import {
   type UpdateFileGroupDto,
 } from './dto/update-file-group.dto';
 import { addFileSchema, type AddFileDto } from './dto/add-file.dto';
+import {
+  queryFileGroupsSchema,
+  type QueryFileGroupsDto,
+} from './dto/query-file-groups.dto';
 
 @Controller('file-groups')
 @UseGuards(ClerkAuthGuard, OrgGuard)
@@ -56,8 +61,12 @@ export class FileGroupsController {
   }
 
   @Get()
-  findAll(@OrgId() orgId: string) {
-    return this.findAllUseCase.execute(orgId);
+  findAll(
+    @OrgId() orgId: string,
+    @Query(new ZodValidationPipe(queryFileGroupsSchema))
+    query: QueryFileGroupsDto,
+  ) {
+    return this.findAllUseCase.execute(orgId, query);
   }
 
   @Get(':id')

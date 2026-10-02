@@ -19,6 +19,7 @@ import { FindAllPontosColetaUseCase } from './usecases/find-all-pontos-coleta.us
 import { FindOnePontoColetaUseCase } from './usecases/find-one-ponto-coleta.usecase';
 import { UpdatePontoColetaUseCase } from './usecases/update-ponto-coleta.usecase';
 import { RemovePontoColetaUseCase } from './usecases/remove-ponto-coleta.usecase';
+import { ReportPontosColetaUseCase } from './usecases/report-pontos-coleta.usecase';
 import {
   createPontoColetaSchema,
   type CreatePontoColetaDto,
@@ -37,6 +38,7 @@ export class PontosColetaController {
     private readonly findOneUseCase: FindOnePontoColetaUseCase,
     private readonly updateUseCase: UpdatePontoColetaUseCase,
     private readonly removeUseCase: RemovePontoColetaUseCase,
+    private readonly reportUseCase: ReportPontosColetaUseCase,
   ) {}
 
   @Post()
@@ -53,6 +55,11 @@ export class PontosColetaController {
   @Get()
   findAll(@OrgId() orgId: string) {
     return this.findAllUseCase.execute(orgId);
+  }
+
+  @Get('relatorio')
+  report(@OrgId() orgId: string) {
+    return this.reportUseCase.execute(orgId);
   }
 
   @Get(':id')

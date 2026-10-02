@@ -6,6 +6,7 @@ import {
   Delete,
   Param,
   Body,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { ClerkAuthGuard } from '@/common/guards/clerk-auth.guard';
@@ -27,6 +28,10 @@ import {
   updateAnaliseSchema,
   type UpdateAnaliseDto,
 } from './dto/update-analise.dto';
+import {
+  queryAnalisesSchema,
+  type QueryAnalisesDto,
+} from './dto/query-analises.dto';
 
 @Controller('analises')
 @UseGuards(ClerkAuthGuard, OrgGuard)
@@ -50,8 +55,12 @@ export class AnalisesController {
   }
 
   @Get()
-  findAll(@OrgId() orgId: string) {
-    return this.findAllUseCase.execute(orgId);
+  findAll(
+    @OrgId() orgId: string,
+    @Query(new ZodValidationPipe(queryAnalisesSchema))
+    query: QueryAnalisesDto,
+  ) {
+    return this.findAllUseCase.execute(orgId, query);
   }
 
   @Get(':id')

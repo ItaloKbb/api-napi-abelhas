@@ -3,6 +3,7 @@ import { PrismaService } from '@/prisma/prisma.service';
 import type { IAnalisesRepository } from './analises.repository';
 import type { CreateAnaliseDto } from '../dto/create-analise.dto';
 import type { UpdateAnaliseDto } from '../dto/update-analise.dto';
+import type { QueryAnalisesDto } from '../dto/query-analises.dto';
 
 @Injectable()
 export class PrismaAnalisesRepository implements IAnalisesRepository {
@@ -12,9 +13,14 @@ export class PrismaAnalisesRepository implements IAnalisesRepository {
     return await this.prisma.analise.create({ data: { ...data, orgId } });
   }
 
-  async findAll(orgId: string) {
+  async findAll(orgId: string, filters?: QueryAnalisesDto) {
     return await this.prisma.analise.findMany({
-      where: { orgId },
+      where: {
+        orgId,
+        amostraId: filters?.amostraId,
+        tipoAnaliseId: filters?.tipoAnaliseId,
+        responsavelId: filters?.responsavelId,
+      },
       include: {
         amostra: true,
         tipoAnalise: true,

@@ -6,6 +6,7 @@ export const createAbelhaSchema = z.object({
   semFerrao: z.boolean().default(true),
   nativa: z.boolean().default(true),
   descricao: z.string().optional(),
+  fotoUrl: z.string().nullable().optional(),
 });
 
 export type CreateAbelhaDto = z.infer<typeof createAbelhaSchema>;

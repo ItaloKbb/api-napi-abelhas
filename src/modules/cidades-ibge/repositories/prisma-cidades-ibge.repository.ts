@@ -35,6 +35,9 @@ export class PrismaCidadesIbgeRepository implements ICidadesIbgeRepository {
   async createMany(
     data: Prisma.CidadesIBGECreateManyInput[],
   ): Promise<{ count: number }> {
-    return await this.prisma.cidadesIBGE.createMany({ data });
+    return await this.prisma.cidadesIBGE.createMany({
+      data,
+      skipDuplicates: true,
+    });
   }
 }

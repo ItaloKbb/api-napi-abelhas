@@ -18,6 +18,7 @@ services:
       MINIO_BUCKET: napi-abelhas
       MINIO_USE_SSL: 'false'
       MINIO_PUBLIC_URL: '${MINIO_PUBLIC_URL:-http://localhost:9000}'
+      FRONTEND_URL: https://lab.theloopcode.com
       PORT: 3000
       NODE_ENV: production
     ports:
@@ -44,8 +45,6 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: napi_abelhas
-    ports:
-      - '5433:5432'
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:

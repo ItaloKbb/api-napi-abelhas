@@ -69,6 +69,13 @@ enum StatusAnalise {
   REJEITADA
 }
 
+enum StatusAmostra {
+  PENDENTE
+  EM_ANALISE
+  CONCLUIDA
+  REJEITADA
+}
+
 model CidadesIBGE {
   id         String @id @default(uuid())
   codigoIBGE String @unique
@@ -103,7 +110,7 @@ model Responsavel {
   orgId String
   nome  String
 
-  instituicaoId String @unique
+  instituicaoId String
 
   cidadeId String?
   cidade   CidadesIBGE? @relation(fields: [cidadeId], references: [id])
@@ -144,8 +151,10 @@ model Abelha {
   semFerrao      Boolean @default(true)
   nativa         Boolean @default(true)
   descricao      String? @db.Text
+  fotoUrl        String?
 
   amostras Amostra[]
+  fileGroups FileGroup[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -163,11 +172,15 @@ model FileGroup {
   analise   Analise? @relation(fields: [analiseId], references: [id])
   analiseId String?
 
+  abelha   Abelha? @relation(fields: [abelhaId], references: [id], onDelete: Cascade)
+  abelhaId String?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@unique([amostraId, analiseId])
   @@index([orgId])
+  @@index([abelhaId])
 }
 
 model File {
@@ -209,6 +222,7 @@ model Amostra {
   orgId      String
   nome       String
   dataColeta DateTime
+  status     StatusAmostra @default(PENDENTE)
 
   pontoColetaId String
   pontoColeta   PontoColeta @relation(fields: [pontoColetaId], references: [id])

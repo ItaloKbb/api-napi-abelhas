@@ -6,6 +6,7 @@ import { FindOnePontoColetaUseCase } from './usecases/find-one-ponto-coleta.usec
 import { UpdatePontoColetaUseCase } from './usecases/update-ponto-coleta.usecase';
 import { RemovePontoColetaUseCase } from './usecases/remove-ponto-coleta.usecase';
 import { PrismaPontosColetaRepository } from './repositories/prisma-pontos-coleta.repository';
+import { ReportPontosColetaUseCase } from './usecases/report-pontos-coleta.usecase';
 
 @Module({
   controllers: [PontosColetaController],
@@ -15,6 +16,7 @@ import { PrismaPontosColetaRepository } from './repositories/prisma-pontos-colet
     FindOnePontoColetaUseCase,
     UpdatePontoColetaUseCase,
     RemovePontoColetaUseCase,
+    ReportPontosColetaUseCase,
     {
       provide: 'IPontosColetaRepository',
       useClass: PrismaPontosColetaRepository,
